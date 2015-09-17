@@ -1,0 +1,11 @@
+{
+  "name": "openrov-plugin-ros",
+  "description": "Itegration of ROS with the OpenROV",
+  "version": "0.0.0",
+  "homepage": "",
+  "main": "lib/ros",
+  "keywords": [
+    "openrov",
+    "plugin"
+  ]
+}
