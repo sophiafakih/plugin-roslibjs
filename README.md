@@ -1,5 +1,7 @@
 This is the ros plugin for OpenROV Cockpit.
 
+Ensure your computer has the IP 192.168.254.1 as the ros plugin streams data to that IP.
+
 Itegration of ROS with the OpenROV
 
 update apt-get
@@ -22,32 +24,24 @@ install roslib
 npm install roslib
 ```
 
-install the plugin (note the below repo has both the cockpit plugin, and the ROS bridge software), break into two repos on git
+install the plugin openrov cockpit plugin (streams cockpit telemetry data to computer runnings ROS)
 ```
 cd /opt/openrov/cockpit/src/plugins
 git cline https://github.com/laughlinbarker/plugin-roslibjs.git ros
 ```
+you should be able to run the plugin at this point.
 
-install ros...
-
-install rosbridge & gscam
+Note that the plugin will load automatically when the backend of cockpit starts on the OpenROV.
+You can monitor this on the ROV via
 ```
-sudo apt-get install ros-indigo-rosbridge-server
-
-sudo apt-get install -y ros-indigo-rosbridge-suite gstreamer0.10 libgstreamer-plugins-base0.10-dev ros-indigo-image-transport ros-indigo-camera-calibration-parsers ros-indigo-camera-info-manager
-
-cd ~/catkin_ws/src
-git clone https://github.com/ros-drivers/gscam
-cd ..
-catkin_make
+tail -f /var/log/openrov.log |grep ROS
 ```
 
-install OpenROV-ros (as above, this is currently in a single repo along with roslib and needs to be broken out)
-```
-cd ~/catkin_src
-git clone https://github.com/laughlinbarker/plugin-roslibjs.git openrov
-cd ..
-catkin_make
-```
+this will display all the console.log messages that contain the string ROS
 
 
+Note that for the plugin to function properly, you cannot load the cockpit on your browser
+(i.e. don't have any browser windows open to 192.168.254.1:8080)
+
+With the node running, you should see a message once you've sucessfully connected
+via the rosbridge_socket.
