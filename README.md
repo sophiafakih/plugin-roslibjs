@@ -27,7 +27,7 @@ npm install roslib
 install the plugin openrov cockpit plugin (streams cockpit telemetry data to computer runnings ROS)
 ```
 cd /opt/openrov/cockpit/src/plugins
-git cline https://github.com/laughlinbarker/plugin-roslibjs.git ros
+git clone https://github.com/laughlinbarker/plugin-roslibjs.git ros
 ```
 you should be able to run the plugin at this point.
 
