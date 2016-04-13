@@ -113,24 +113,32 @@ function ros(name, deps) {
    var rosVoltage = new ROSLIB.Topic({
      ros : ros,
      name : '/openrov/diagnostics/voltage',
-     messageType : 'diagnostic_msgs/KeyValue'
+     messageType : 'std_msgs/Float32'
    });
    
    var voltage = new ROSLIB.Message({
-     key : 'voltage',
-     value : ''
+     data : 0.0
    });
    
-   // CURRENT
-   var rosCurrent = new ROSLIB.Topic({
+   // CONTROLLER BOARD CURRENT
+   var rosHotelCurrent = new ROSLIB.Topic({
      ros : ros,
-     name : '/openrov/diagnostics/current',
-     messageType : 'diagnostic_msgs/KeyValue'
+     name : '/openrov/diagnostics/hotel_current',
+     messageType : 'std_msgs/Float32'
    });
    
-   var current = new ROSLIB.Message({
-     key : 'current',
-     value : ''
+   var hotel_current = new ROSLIB.Message({
+     data : 0.0
+   });
+   
+     var rosBattCurrent = new ROSLIB.Topic({
+     ros : ros,
+     name : '/openrov/diagnostics/batt_current',
+     messageType : 'std_msgs/Float32'
+   });
+   
+   var batt_current = new ROSLIB.Message({
+     data : 0.0
    });
    
    // CPU USAGE
@@ -153,6 +161,28 @@ function ros(name, deps) {
    });
    
    var cam_servo = new ROSLIB.Message({
+     data : 0.0
+   });
+   
+   // LASER STATUS
+   var rosLaserStatus = new ROSLIB.Topic({
+     ros : ros,
+     name : '/openrov/laser_status',
+     messageType : 'std_msgs/Bool'
+   });
+   
+   var laser_status = new ROSLIB.Message({
+     data : false
+   });
+   
+   // LIGHT STATUS
+   var rosLightLevel = new ROSLIB.Topic({
+     ros : ros,
+     name : '/openrov/light_level',
+     messageType : 'std_msgs/Float32'
+   });
+   
+   var light_level = new ROSLIB.Message({
      data : 0.0
    });
 
@@ -202,23 +232,43 @@ function ros(name, deps) {
     }
     
     if ('vout' in data) {
-      voltage.value = JSON.stringify(data.vout);
+      voltage.data = parseFloat(data.vout);
       rosVoltage.publish(voltage);
     }
     
     if ('iout' in data) {
-      current.value = JSON.stringify(data.iout);
-      rosVoltage.publish(voltage);
+      hotel_current.data = parseFloat(data.iout);
+      rosHotelCurrent.publish(hotel_current);
+    }
+    
+    if ('btti' in data) {
+      batt_current.data = parseFloat(data.btti);
+      rosBattCurrent.publish(batt_current);
     }
     
     if ('cpuUsage' in data) {
-      current.value = JSON.stringify(data.cpuUsage);
+      cpu.value = JSON.stringify(data.cpuUsage);
       rosCPU.publish(cpu);
     }
     
     if ('servo' in data) {
-      cam_servo.data = parseInt(data.servo);
+      cam_servo.data = parseInt(data.servo,10);
       rosServo.publish(cam_servo);
+    }
+    
+    if ('claser' in data){
+      if (parseInt(data.claser,10) == 255){
+        laser_status.data = true;
+      }
+      else{
+        laser_status.data = false;
+      }
+      rosLaserStatus.publish(laser_status);
+    }
+    
+    if ('LIGP' in data){
+      light_level.data = parseFloat(data.LIGP);
+      rosLightLevel.publish(light_level);
     }
     
   });
