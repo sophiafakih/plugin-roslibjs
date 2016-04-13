@@ -107,6 +107,54 @@ function ros(name, deps) {
     name : '/openrov/cmd_pose',
     messageType : 'geometry_msgs/Pose'
   });
+  
+   // DIAGNOSTIC MESSAGES
+   // VOLTAGE
+   var rosVoltage = new ROSLIB.Topic({
+     ros : ros,
+     name : '/openrov/diagnostics/voltage',
+     messageType : 'diagnostic_msgs/KeyValue'
+   });
+   
+   var voltage = new ROSLIB.Message({
+     key : 'voltage',
+     value : ''
+   });
+   
+   // CURRENT
+   var rosCurrent = new ROSLIB.Topic({
+     ros : ros,
+     name : '/openrov/diagnostics/current',
+     messageType : 'diagnostic_msgs/KeyValue'
+   });
+   
+   var current = new ROSLIB.Message({
+     key : 'current',
+     value : ''
+   });
+   
+   // CPU USAGE
+   var rosCPU = new ROSLIB.Topic({
+     ros : ros,
+     name : '/openrov/diagnostics/cpu_usage',
+     messageType : 'diagnostic_msgs/KeyValue'
+   });
+   
+   var cpu = new ROSLIB.Message({
+     key : 'cpu',
+     value : ''
+   });
+   
+   // CAM SERVO TILT
+   var rosServo = new ROSLIB.Topic({
+     ros : ros,
+     name : '/openrov/camera_servo',
+     messageType : 'std_msgs/UInt16'
+   });
+   
+   var cam_servo = new ROSLIB.Message({
+     data : 0.0
+   });
 
   console.log('ROS finished loading ros things.');
 
@@ -152,6 +200,27 @@ function ros(name, deps) {
       pressure.fluid_pressure = parseFloat(data.pres);
       rosPressure.publish(pressure);
     }
+    
+    if ('vout' in data) {
+      voltage.value = JSON.stringify(data.vout);
+      rosVoltage.publish(voltage);
+    }
+    
+    if ('iout' in data) {
+      current.value = JSON.stringify(data.iout);
+      rosVoltage.publish(voltage);
+    }
+    
+    if ('cpuUsage' in data) {
+      current.value = JSON.stringify(data.cpuUsage);
+      rosCPU.publish(cpu);
+    }
+    
+    if ('servo' in data) {
+      cam_servo.data = parseInt(data.servo);
+      rosServo.publish(cam_servo);
+    }
+    
   });
 
   // Listen to Navdata
