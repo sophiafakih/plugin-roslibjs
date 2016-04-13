@@ -112,7 +112,7 @@ function ros(name, deps) {
    // VOLTAGE
    var rosVoltage = new ROSLIB.Topic({
      ros : ros,
-     name : '/openrov/diagnostics/voltage',
+     name : '/openrov/diag/voltage',
      messageType : 'std_msgs/Float32'
    });
    
@@ -123,7 +123,7 @@ function ros(name, deps) {
    // CONTROLLER BOARD CURRENT
    var rosHotelCurrent = new ROSLIB.Topic({
      ros : ros,
-     name : '/openrov/diagnostics/hotel_current',
+     name : '/openrov/diag/hotel_current',
      messageType : 'std_msgs/Float32'
    });
    
@@ -131,9 +131,10 @@ function ros(name, deps) {
      data : 0.0
    });
    
+   //  BATTERY CURRENT
      var rosBattCurrent = new ROSLIB.Topic({
      ros : ros,
-     name : '/openrov/diagnostics/batt_current',
+     name : '/openrov/diag/batt_current',
      messageType : 'std_msgs/Float32'
    });
    
@@ -144,13 +145,12 @@ function ros(name, deps) {
    // CPU USAGE
    var rosCPU = new ROSLIB.Topic({
      ros : ros,
-     name : '/openrov/diagnostics/cpu_usage',
-     messageType : 'diagnostic_msgs/KeyValue'
+     name : '/openrov/diag/cpu_usage',
+     messageType : 'std_msgs/Float32'
    });
    
    var cpu = new ROSLIB.Message({
-     key : 'cpu',
-     value : ''
+     data : 0.0
    });
    
    // CAM SERVO TILT
@@ -247,7 +247,7 @@ function ros(name, deps) {
     }
     
     if ('cpuUsage' in data) {
-      cpu.value = JSON.stringify(data.cpuUsage);
+      cpu.data = parseFloat(data.cpuUsage);
       rosCPU.publish(cpu);
     }
     
