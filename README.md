@@ -42,3 +42,5 @@ Note that for the plugin to function properly, you cannot load the cockpit on yo
 
 With the node running, you should see a message once you've sucessfully connected
 via the rosbridge_socket.
+
+ (make list of currently availiable commands here)

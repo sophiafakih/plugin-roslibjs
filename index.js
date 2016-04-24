@@ -48,11 +48,6 @@ function ros(name, deps) {
     name : '/openrov/motortarget',
     messageType : 'openrov/motortarget'
   });
-/*
-  var motortarget = new ROSLIB.Message({
-    motors : [0,0,0]
-  });
-*/
 
   // NAVDATA TOPIC
   var rosNavData = new ROSLIB.Topic({
@@ -160,6 +155,7 @@ function ros(name, deps) {
      messageType : 'std_msgs/UInt16'
    });
    
+   
    var cam_servo = new ROSLIB.Message({
      data : 0.0
    });
@@ -175,6 +171,13 @@ function ros(name, deps) {
      data : false
    });
    
+   // LASER TOGGLE  - uses (int) 0 and 255 to toggle on/off
+   var rosLaserToggle = new ROSLIB.Topic({
+     ros : ros,
+     name : '/openrov/laser_toggle',
+     messageType : 'std_msgs/Int16'
+   });
+   
    // LIGHT STATUS
    var rosLightLevel = new ROSLIB.Topic({
      ros : ros,
@@ -184,6 +187,13 @@ function ros(name, deps) {
    
    var light_level = new ROSLIB.Message({
      data : 0.0
+   });
+   
+   // LIGHT CONTROL - uses (float) 0.0-1.0 corresponding to 0-100% light power
+   var rosLightControl = new ROSLIB.Topic({
+     ros : ros,
+     name : '/openrov/light_command',
+     messageType : 'std_msgs/Float32'
    });
 
   console.log('ROS finished loading ros things.');
@@ -198,6 +208,29 @@ function ros(name, deps) {
     deps.rov.send('thrust('+message.linear.y*100+')');
     deps.rov.send('lift('+message.linear.z*100+')');
     deps.rov.send('strafe('+message.linear.x*100+')');
+  
+  });
+  
+  // Subscribe to the raw motor topic
+  // the below takes raw PWM values (1500 ms neutral) which get written to Arudino
+  rosMotorTarget.subscribe(function(message){
+    console.log('ROS received MotorTarget');
+    
+    deps.rov.send('port('+message.motors[0]+')');
+    deps.rov.send('vertical('+message.motors[1]+')');
+    deps.rov.send('starboard('+message.motors[2]+')');
+  });
+  
+  // Subscribe to light command topic
+  rosLightControl.subscribe(function(message){
+    console.log('ROS light command:'+message.data);
+    deps.rov.sendLight(message.data);
+  });
+  
+  // Subscribe to laser command toggle
+  rosLaserToggle.subscribe(function(message){
+    console.log('ROS laser toggle received');
+    deps.rov.sendLaser(message.data);
   });
   
   // Subscribe to position motor control topic
