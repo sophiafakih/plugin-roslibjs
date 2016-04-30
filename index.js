@@ -152,7 +152,7 @@ function ros(name, deps) {
    var rosServo = new ROSLIB.Topic({
      ros : ros,
      name : '/openrov/camera_servo',
-     messageType : 'std_msgs/UInt16'
+     messageType : 'std_msgs/Int32'
    });
    
    
@@ -175,7 +175,7 @@ function ros(name, deps) {
    var rosLaserToggle = new ROSLIB.Topic({
      ros : ros,
      name : '/openrov/laser_toggle',
-     messageType : 'std_msgs/Int16'
+     messageType : 'std_msgs/Int32'
    });
    
    // LIGHT STATUS
@@ -214,28 +214,30 @@ function ros(name, deps) {
   // Subscribe to the raw motor topic
   // the below takes raw PWM values (1500 ms neutral) which get written to Arudino
   rosMotorTarget.subscribe(function(message){
-    console.log('ROS received MotorTarget');
+    //console.log('ROS received MotorTarget');
     
     deps.rov.send('port('+message.motors[0]+')');
     deps.rov.send('vertical('+message.motors[1]+')');
     deps.rov.send('starboard('+message.motors[2]+')');
+    
+    //controller.hardware.write('starboard('+message.motors[2]+')');
   });
   
   // Subscribe to light command topic
   rosLightControl.subscribe(function(message){
-    console.log('ROS light command:'+message.data);
+    //console.log('ROS light command:'+message.data);
     deps.rov.sendLight(message.data);
   });
   
   // Subscribe to laser command toggle
   rosLaserToggle.subscribe(function(message){
-    console.log('ROS laser toggle received');
+    //console.log('ROS laser toggle received');
     deps.rov.sendLaser(message.data);
   });
   
   // Subscribe to position motor control topic
   rosCmdPose.subscribe(function(message) {
-    console.log('ROS recived pose command');
+    //console.log('ROS recived pose command');
     
     //deps.rov.send('deptlon('+message.position.z+')');
     //deps.rov.send('headlon('+message.position.z+')');

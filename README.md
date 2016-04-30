@@ -44,3 +44,6 @@ With the node running, you should see a message once you've sucessfully connecte
 via the rosbridge_socket.
 
  (make list of currently availiable commands here)
+
+#Run motors [port, vert, stbd]
+    rostopic pub -1 openrov/motortarget openrov/motortarget '{motors:[1500, 1500, 1500]}'
