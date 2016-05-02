@@ -247,6 +247,10 @@ function ros(name, deps) {
   deps.rov.on('status', function (data) {
     status.status = JSON.stringify(data);
     rosStatus.publish(status);
+    
+    //little hack here stop OpenROV lights from flashing if Cockpit hasn't been loaded in browser.
+    //perhaps better to have this heartbeat come from ROS PC, but this works for time being.
+    deps.rov.send('ping(0)');
 
     if ('mtarg' in data) {
       var mtargs = data.mtarg.split(",");
