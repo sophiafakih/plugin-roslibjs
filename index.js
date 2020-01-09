@@ -19,7 +19,8 @@ function ros(name, deps) {
     console.log('ROS closed websocket connection');
   });
 
-
+  
+   console.log('ROS starts loading ros topics and messages');
   // DEBUG TOPIC
   var rosDebug = new ROSLIB.Topic({
     ros : ros,
@@ -155,11 +156,16 @@ function ros(name, deps) {
      messageType : 'std_msgs/Int32'
    });
    
-   
    var cam_servo = new ROSLIB.Message({
      data : 0.0
    });
    
+   var rosServoTilt = new ROSLIB.Topic({
+     ros : ros,
+     name : '/openrov/servo_cam_tilt',
+     messageType : 'std_msgs/Float32'
+   });
+  
    // LASER STATUS
    var rosLaserStatus = new ROSLIB.Topic({
      ros : ros,
@@ -242,7 +248,14 @@ function ros(name, deps) {
     //deps.rov.send('deptlon('+message.position.z+')');
     //deps.rov.send('headlon('+message.position.z+')');
   });
-
+  
+  //Subscribe to cam servo command toggle
+    rosServoTilt.subscribe(function(message) {
+  //console.log('ROS tilt servo received');
+    deps.rov.sendTilt(message.data);;
+  });
+  
+  
   // Listen to Status
   deps.rov.on('status', function (data) {
     status.status = JSON.stringify(data);
