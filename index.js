@@ -45,6 +45,24 @@ function ros(name, deps) {
   });
   
   
+  //ESC STATUS
+  /*   var rosEscStatus = new ROSLIB.Topic({
+     ros : ros,
+     name : '/openrov/ESC_status',
+     messageType : 'std_msgs/Bool'
+   });
+   
+   var ESC_status = new ROSLIB.Message({
+     data : true
+   }); */
+   
+   // ESC TOGGLE  - uses (int) 0 and 1 to toggle off/on
+   var rosEscToggle = new ROSLIB.Topic({
+     ros : ros,
+     name : '/openrov/ESC_toggle',
+     messageType : 'std_msgs/Int32'
+   });
+  
 
   // RAW STATUS TOPIC
   var rosStatus = new ROSLIB.Topic({
@@ -219,7 +237,9 @@ function ros(name, deps) {
    });
 
   console.log('ROS finished loading ros things.');
-
+  
+  
+  /************* SUBSCRIBE ***********/
   // Subscribe to rate motor control topic
   rosCmdRate.subscribe(function(message) {
     console.log('ROS recived rate command');
@@ -265,15 +285,25 @@ function ros(name, deps) {
     //deps.rov.send('headlon('+message.position.z+')');
   });
   
-  // Subscribe to servo camara command topic
   rosServoTilt.subscribe(function(message) {
-    //console.log('ROS tilt servo received');
-    deps.rov.sendTilt(message.data);;
+//    //console.log('ROS tilt servo received');
+    deps.rov.sendTilt(message.data);
   });
+  
+  rosEscToggle.subscribe(function(message) {
+    if (message.data == 1) {
+      deps.rov.send('escp(1)');
+    } else if (message.data == 0) {
+      deps.rov.send('escp(0)');
+    }
+  });      
+        
 
 
 
-
+  
+  
+  /************** PUBLISH ************/
   // Listen to Status
   deps.rov.on('status', function (data) {
     status.status = JSON.stringify(data);
