@@ -19,18 +19,32 @@ function ros(name, deps) {
     console.log('ROS closed websocket connection');
   });
 
-  
-   console.log('ROS starts loading ros topics and messages');
-  // DEBUG TOPIC
-  var rosDebug = new ROSLIB.Topic({
+  console.log('ROS starts loading ros topics and messages');
+  // COCKPIT TOPICS
+  // Heading_toggle
+  var rosDebugHeading = new ROSLIB.Topic({
     ros : ros,
-    name : '/openrov/debug',
+    name : '/openrov/heading',
     messageType : 'std_msgs/String'
   });
 
-  var debug = new ROSLIB.Message({
+  var debugHeading = new ROSLIB.Message({
     data : ''
   });
+  
+  
+  //Depth_Toggle
+  var rosDepth = new ROSLIB.Topic({
+    ros : ros,
+    name : '/openrov/depth',
+    messageType : 'std_msgs/String'
+  });
+
+  var debugDepth = new ROSLIB.Message({
+    data : ''
+  });
+  
+  
 
   // RAW STATUS TOPIC
   var rosStatus = new ROSLIB.Topic({
@@ -156,6 +170,7 @@ function ros(name, deps) {
      messageType : 'std_msgs/Int32'
    });
    
+   
    var cam_servo = new ROSLIB.Message({
      data : 0.0
    });
@@ -165,7 +180,8 @@ function ros(name, deps) {
      name : '/openrov/servo_cam_tilt',
      messageType : 'std_msgs/Float32'
    });
-  
+   
+   
    // LASER STATUS
    var rosLaserStatus = new ROSLIB.Topic({
      ros : ros,
@@ -249,13 +265,15 @@ function ros(name, deps) {
     //deps.rov.send('headlon('+message.position.z+')');
   });
   
-  //Subscribe to cam servo command toggle
-    rosServoTilt.subscribe(function(message) {
-  //console.log('ROS tilt servo received');
+  // Subscribe to servo camara command topic
+  rosServoTilt.subscribe(function(message) {
+    //console.log('ROS tilt servo received');
     deps.rov.sendTilt(message.data);;
   });
-  
-  
+
+
+
+
   // Listen to Status
   deps.rov.on('status', function (data) {
     status.status = JSON.stringify(data);
@@ -341,11 +359,17 @@ function ros(name, deps) {
   // the browser. Currently listening to a Depth Hold Toggle 
   // from Cockpit and publishing a ROS message
   deps.io.sockets.on('connection', function (socket) {
+    socket.on('holdHeading_toggle', function () {
+      debugHeading.data = 'Hold heading toggled';
+      rosDebugHeading.publish(debugHeading);
+    });
+    
     socket.on('holdDepth_toggle', function () {
-      debug.data = 'Hold depth toggled'
-      rosDebug.publish(debug);
+      debugDepth.data = 'Hold depth toggled';
+      rosDepth.publish(debugDepth);
     });
   });
+
 
 };
 
